@@ -24,7 +24,8 @@ class Region(models.Model):
     """Справочник субъектов"""
     name = models.CharField(max_length=100, help_text="Название субъекта")
     abbreviations = models.CharField(max_length=4, help_text="Абривиатура")
-    code = models.ForeignKey(RegionCode, help_text="Код региона")
+    code = models.ForeignKey(RegionCode, on_delete=models.SET_NULL,
+                             help_text="Код региона", null=True)
 
 
 class Locality(models.Model):
@@ -56,7 +57,8 @@ class EntranceType(models.Model):
 
 class Entrance(models.Model):
     """Справочник входов"""
-    entrance_type = models.OneToOneField(EntranceType, help_text="Тип входа")
+    entrance_type = models.OneToOneField(EntranceType, on_delete=models.SET_NULL,
+                                         help_text="Тип входа", null=True)
     numbers = models.CharField(max_length=10, help_text="Номер входа")
     description = models.TextField(help_text="Описание")
 
@@ -94,15 +96,8 @@ class RoomType(models.Model):
     discription = models.TextField(help_text="Описание комнаты")
 
 
-#Миксины
-class BaseTime(models.Model):
-    "Класс миксин - создание, изменение"
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-
 #Модели
-class Building(models.Model, BaseTime):
+class Building(models.Model):
     """
     Здание
     - Адрес
@@ -111,19 +106,29 @@ class Building(models.Model, BaseTime):
     - Площадь
     - Описание
     """
-    #Adress
+    #Base
     id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    #Adress
     index = models.CharField(max_length=10, help_text="Индекс")
-    country = models.OneToOneField(Сountrie, on_delete=models.SET_NULL, help_text="Страна")
-    region = models.OneToOneField(Region, on_delete=models.SET_NULL, help_text="Субъект")
-    locality = models.OneToOneField(Locality, on_delete=models.SET_NULL, help_text="Начеленный пункт")
-    street_type = models.OneToOneField(StreetType, on_delete=models.SET_NULL, help_text="Тип дороги")
+    country = models.OneToOneField(Сountrie, on_delete=models.SET_NULL,
+                                   help_text="Страна", null=True)
+    region = models.OneToOneField(Region, on_delete=models.SET_NULL,
+                                  help_text="Субъект", null=True)
+    locality = models.OneToOneField(Locality, on_delete=models.SET_NULL,
+                                    help_text="Начеленный пункт", null=True)
+    street_type = models.OneToOneField(StreetType, on_delete=models.SET_NULL,
+                                       help_text="Тип дороги", null=True)
     street = models.CharField(max_length=250, help_text="Название дороги (улицы)")
-    building_type = models.OneToOneField(BuildingType, on_delete=models.SET_NULL, help_text="Тип строения")
+
     building_number = models.CharField(max_length=10, help_text="Номер сроения")
 
     #Common
-    type = models.OneToOneField(BuildingType, on_delete=models.SET_NULL, help_text="Тип дома")
+
+    building_type = models.OneToOneField(BuildingType, on_delete=models.SET_NULL,
+                                         help_text="Тип строения", null=True)
     total_space = models.IntegerField(help_text="Этажность")
     total_square = models.FloatField(help_text="Общая площадь")
     description = models.CharField(help_text="Описание")
@@ -132,26 +137,42 @@ class Building(models.Model, BaseTime):
     class Meta:
         ordering = ["-created"]
 
-class Section(models.Model, BaseTime):
+class Section(models.Model):
     """Секция дома."""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #Base
+    id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    #Common
     number = models.IntegerField(help_text="Номер секции")
-    section_type = models.OneToOneField(SectionType, on_delete=models.SET_NULL, help_text="Тип секции")
-    entrance_special = models.ForeignKey(EntranceSpecial, help="")
+    section_type = models.OneToOneField(SectionType, on_delete=models.SET_NULL,
+                                        help_text="Тип секции", null=True)
+    entrance_special = models.ForeignKey(EntranceSpecial, on_delete=models.SET_NULL,
+                                         help_text="Дополнительный вход", null=True)
     description = models.TextField(help_text="Описание секции")
-    building = models.ForeignKey(Building, help_text="Дом")
+    building = models.ForeignKey(Building, on_delete=models.SET_NULL,
+                                 help_text="Дом", null=True)
     max_number_of_floors = models.IntegerField(help_text="Этажность")
 
     class Meta:
         ordering = ['number']
 
-class Floor(models.Model, BaseTime):
+class Floor(models.Model):
     """Этаж"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #Base
+    id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    #Entering
     number = models.IntegerField(help_text="Номер этажа")
-    ladder = models.ForeignKey(Ladder, help_text="Лифт", on_delete=models.SET_NULL(), default=None)
-    elevator = models.ForeignKey(Elevator, help_text="Лесница", on_delete=models.SET_NULL(), default=None)
-    section = models.ForeignKey(Section, help_text="", on_delete=models.SET_NULL(), default=None)
+    ladder = models.ForeignKey(Ladder, help_text="Лифт", on_delete=models.SET_NULL,
+                               default=None, null=True)
+    elevator = models.ForeignKey(Elevator, help_text="Лесница",
+                                 on_delete=models.SET_NULL, default=None, null=True)
+    section = models.ForeignKey(Section, help_text="", on_delete=models.SET_NULL,
+                                default=None, null=True)
 
     #Common
     total_space = models.FloatField(help_text="Площадь квартир на эьаже")
@@ -160,15 +181,21 @@ class Floor(models.Model, BaseTime):
     min_numbre_space = models.CharField(max_length=10, help_text="Номер первой квартиры на этаже")
     max_numbre_space = models.CharField(max_length=10, help_text="Номер последний квартиры на этаже")
     description = models.TextField(help_text="Описание этажа")
-    floor_special = models.OneToOneField(FloorSpecial, on_delete=models.SET_NULL, default=None, help_text="Тип этажа")
+    floor_special = models.OneToOneField(FloorSpecial, on_delete=models.SET_NULL, default=None,
+                                         help_text="Тип этажа", null=True)
 
     class Meta:
         ordering = ['number']
 
 class Space(models.Model):
     """Помещение"""
-    id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
-    space_type = models.OneToOneField(SpaceType, on_delete=models.SET_NULL, default=None)
+    #Base
+    id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    #Common
+    space_type = models.OneToOneField(SpaceType, on_delete=models.SET_NULL, default=None, null=True)
     number = models.CharField(max_length=10, help_text="Номер квартиры")
     square = models.FloatField(help_text="Площадь квартиры")
     description = models.TextField(help_text="Описание квартиры")
@@ -178,10 +205,17 @@ class Space(models.Model):
 
 class Room(models.Model):
     """Комнаты помещения"""
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    type = models.OneToOneField(RoomType, help_text="Тип помещения")
+    #Base
+    id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    #Common
+    type = models.OneToOneField(RoomType, on_delete=models.SET_NULL,
+                                help_text="Тип комнаты помещения", null=True)
     description = models.TextField(help_text="Описание комнаты")
-    space = models.ForeignKey(Space, on_delete=models.SET_NULL, default=None)
+    space = models.ForeignKey(Space, on_delete=models.SET_NULL, default=None,
+                              help_text="Помещение", null=True)
 
 
 
