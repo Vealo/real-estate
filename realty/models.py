@@ -84,8 +84,14 @@ class FloorSpecial(models.Model):
     description = models.TextField(help_text="Описание этажа")
 
 
+class SpaceType(models.Model):
+    name = models.CharField(max_length=50, help_text="Тип помещения")
+    discription = models.TextField(help_text="Описание помещения")
 
 
+class RoomType(models.Model):
+    name = models.CharField(max_length=50, help_text="Тип комнаты")
+    discription = models.TextField(help_text="Описание комнаты")
 
 
 #Миксины
@@ -140,7 +146,7 @@ class Section(models.Model, BaseTime):
         ordering = ['number']
 
 class Floor(models.Model, BaseTime):
-    """Этаж секции"""
+    """Этаж"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     number = models.IntegerField(help_text="Номер этажа")
     ladder = models.ForeignKey(Ladder, help_text="Лифт", on_delete=models.SET_NULL(), default=None)
@@ -160,4 +166,22 @@ class Floor(models.Model, BaseTime):
         ordering = ['number']
 
 class Space(models.Model):
+    """Помещение"""
     id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
+    space_type = models.OneToOneField(SpaceType, on_delete=models.SET_NULL, default=None)
+    number = models.CharField(max_length=10, help_text="Номер квартиры")
+    square = models.FloatField(help_text="Площадь квартиры")
+    description = models.TextField(help_text="Описание квартиры")
+
+    class Meta:
+        ordering = ['number']
+
+class Room(models.Model):
+    """Комнаты помещения"""
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    type = models.OneToOneField(RoomType, help_text="Тип помещения")
+    description = models.TextField(help_text="Описание комнаты")
+    space = models.ForeignKey(Space, on_delete=models.SET_NULL, default=None)
+
+
+
