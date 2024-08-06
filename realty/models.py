@@ -78,6 +78,16 @@ class Ladder(models.Model):
     name = models.CharField(max_length=150, help_text="Название лесница")
     description = models.TextField(help_text="Описание")
 
+
+class FloorSpecial(models.Model):
+    name = models.CharField(help_text="Тип этажа")
+    description = models.TextField(help_text="Описание этажа")
+
+
+
+
+
+
 #Миксины
 class BaseTime(models.Model):
     "Класс миксин - создание, изменение"
@@ -137,5 +147,17 @@ class Floor(models.Model, BaseTime):
     elevator = models.ForeignKey(Elevator, help_text="Лесница", on_delete=models.SET_NULL(), default=None)
     section = models.ForeignKey(Section, help_text="", on_delete=models.SET_NULL(), default=None)
 
+    #Common
+    total_space = models.FloatField(help_text="Площадь квартир на эьаже")
+    total_square = models.FloatField(help_text="Площадь всего этажа")
+    common_area = models.FloatField(help_text="Плащадь общих помещений")
+    min_numbre_space = models.CharField(max_length=10, help_text="Номер первой квартиры на этаже")
+    max_numbre_space = models.CharField(max_length=10, help_text="Номер последний квартиры на этаже")
+    description = models.TextField(help_text="Описание этажа")
+    floor_special = models.OneToOneField(FloorSpecial, on_delete=models.SET_NULL, default=None, help_text="Тип этажа")
+
     class Meta:
         ordering = ['number']
+
+class Space(models.Model):
+    id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
