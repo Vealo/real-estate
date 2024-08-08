@@ -4,56 +4,72 @@ import uuid
 #Справочники
 class BuildingType(models.Model):
     """Справочник типов строений"""
-    type = models.CharField(max_length=50,help_text="Наименование")
+    name = models.CharField(max_length=250,help_text="Наименование")
+    slug = models.SlugField(max_length=250, unique=True, default=None)
     description = models.CharField(max_length=250, help_text="Описание")
+
+    def __str__(self):
+        return self.name
 
 
 class Сountrie(models.Model):
     """Справочник стран"""
     name = models.CharField(max_length=100, help_text="Название страны")
+    slug = models.SlugField(max_length=100, unique=True, default=None)
     abbreviations = models.CharField(max_length=4, help_text="Абривиатура")
 
+    def __str__(self):
+        return self.name
 
 
 class RegionCode(models.Model):
     "Справочник код субъектов"
     code = models.CharField(max_length=4, help_text="Код региона")
 
+    def __str__(self):
+        return self.code
 
 class Region(models.Model):
     """Справочник субъектов"""
     name = models.CharField(max_length=100, help_text="Название субъекта")
-    abbreviations = models.CharField(max_length=4, help_text="Абривиатура")
+    slug = models.SlugField(max_length=100, unique=True, default=None)
+    abbreviations = models.CharField(max_length=10, help_text="Абривиатура", default=None)
     code = models.ForeignKey(RegionCode, on_delete=models.SET_NULL,
                              help_text="Код региона", null=True)
+
+    def __str__(self):
+        return  self.name
+
 
 
 class Locality(models.Model):
     """Справочник начеленных пунктов    """
     name = models.CharField(max_length=250, help_text="Назвение населенного пункта")
 
+    def __str__(self):
+        return self.name
 
 class StreetType(models.Model):
     """Справочник типов дорог в населенном пункте. Пример: улица."""
     name = models.CharField(max_length=100, help_text="Тип дороги (улицы) в городе")
     abbreviations = models.CharField(max_length=6, help_text="Абривиатура названия")
 
-
-class BuildingType(models.Model):
-    """Тип строения."""
-    name = models.CharField(max_length=150, help_text="Наименование типа строения")
-    description = models.TextField(help_text="Описание строения")
-
+    def __str__(self):
+        return self.name
 
 class SectionType(models.Model):
     """Справочник типов секций"""
     name = models.CharField(max_length=50, help_text="Наименование секции")
 
+    def __str__(self):
+        return self.name
 
 class EntranceType(models.Model):
     """Справочник типов входов"""
     name = models.CharField(max_length=50, help_text="Тип входа (парадная / подъезд)")
 
+    def __str__(self):
+        return self.name
 
 class Entrance(models.Model):
     """Справочник входов"""
@@ -62,39 +78,53 @@ class Entrance(models.Model):
     numbers = models.CharField(max_length=10, help_text="Номер входа")
     description = models.TextField(help_text="Описание")
 
+    def __str__(self):
+        return f'{self.entrance_type} {self.numbers}'
 
 class EntranceSpecial(models.Model):
     """Нестандартных справочников входов"""
     name = models.CharField(max_length=150, help_text="Наименование входа")
     description = models.TextField(help_text="Описание")
 
+    def __str__(self):
+        return self.name
 
 class Elevator(models.Model):
     """Справочник лифтов"""
     name = models.CharField(max_length=150, help_text="Название лифта")
     description = models.TextField(help_text="Описание")
 
+    def __str__(self):
+        return self.name
 
 class Ladder(models.Model):
     """Справочник лесница"""
     name = models.CharField(max_length=150, help_text="Название лесница")
     description = models.TextField(help_text="Описание")
 
+    def __str__(self):
+        return self.name
 
 class FloorSpecial(models.Model):
     name = models.CharField(help_text="Тип этажа")
     description = models.TextField(help_text="Описание этажа")
 
+    def __str__(self):
+        return self.name
 
 class SpaceType(models.Model):
     name = models.CharField(max_length=50, help_text="Тип помещения")
     discription = models.TextField(help_text="Описание помещения")
 
+    def __str__(self):
+        return self.name
 
 class RoomType(models.Model):
     name = models.CharField(max_length=50, help_text="Тип комнаты")
     discription = models.TextField(help_text="Описание комнаты")
 
+    def __str__(self):
+        self.name
 
 #Модели
 class Building(models.Model):
@@ -133,6 +163,8 @@ class Building(models.Model):
     total_square = models.FloatField(help_text="Общая площадь")
     description = models.CharField(help_text="Описание")
 
+    def __str__(self):
+        return f'{self.building_type} {self.building_number} {self.street_type} {self.street}'
 
     class Meta:
         ordering = ["-created"]
@@ -154,6 +186,9 @@ class Section(models.Model):
     building = models.ForeignKey(Building, on_delete=models.SET_NULL,
                                  help_text="Дом", null=True)
     max_number_of_floors = models.IntegerField(help_text="Этажность")
+
+    def __str__(self):
+        return f'Секция {self.number}'
 
     class Meta:
         ordering = ['number']
@@ -184,6 +219,9 @@ class Floor(models.Model):
     floor_special = models.OneToOneField(FloorSpecial, on_delete=models.SET_NULL, default=None,
                                          help_text="Тип этажа", null=True)
 
+    def __str__(self):
+        return f'Этаж: {self.number}'
+
     class Meta:
         ordering = ['number']
 
@@ -199,6 +237,10 @@ class Space(models.Model):
     number = models.CharField(max_length=10, help_text="Номер квартиры")
     square = models.FloatField(help_text="Площадь квартиры")
     description = models.TextField(help_text="Описание квартиры")
+
+
+    def __str__(self):
+        return f'Помещение: {self.space_type} {self.number}'
 
     class Meta:
         ordering = ['number']
@@ -217,5 +259,5 @@ class Room(models.Model):
     space = models.ForeignKey(Space, on_delete=models.SET_NULL, default=None,
                               help_text="Помещение", null=True)
 
-
-
+    def __str__(self):
+        return f"Комната: {self.space}"
