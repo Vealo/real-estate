@@ -38,7 +38,7 @@ class Region(models.Model):
                              help_text="Код региона", null=True)
 
     def __str__(self):
-        return  self.name
+        return self.name
 
 
 
@@ -79,7 +79,7 @@ class Entrance(models.Model):
     description = models.TextField(help_text="Описание")
 
     def __str__(self):
-        return f'{self.entrance_type} {self.numbers}'
+        return f'{self.entrance_type.name} {self.numbers}'
 
 class EntranceSpecial(models.Model):
     """Нестандартных справочников входов"""
@@ -124,7 +124,7 @@ class RoomType(models.Model):
     discription = models.TextField(help_text="Описание комнаты")
 
     def __str__(self):
-        self.name
+        return self.name
 
 #Модели
 class Building(models.Model):
@@ -260,4 +260,4 @@ class Room(models.Model):
                               help_text="Помещение", null=True)
 
     def __str__(self):
-        return f"Комната: {self.space}"
+        return f"Комната: {self.type.name}"

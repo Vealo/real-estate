@@ -13,7 +13,7 @@ class RoomAdmin(admin.ModelAdmin):
 class RoomTypeAdmin(admin.ModelAdmin):
     list_display = ['name']
     list_filter = ['name']
-    search_fields = ['name', 'description']
+    search_fields = ['name', 'discription']
     ordering = ['name']
 
 
@@ -45,3 +45,33 @@ class RegionAdmin(admin.ModelAdmin):
     list_filter = ['name']
     search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(models.Locality)
+class LocalityAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name']
+
+@admin.register(models.StreetType)
+class StreetTypeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'abbreviations']
+    list_filter = ['name']
+    search_fields = ['name']
+
+@admin.register(models.SectionType)
+class SectionTypeAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name']
+
+@admin.register(models.EntranceType)
+class EntranceTypeAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name']
+
+@admin.register(models.Entrance) #TODO доделать, нет slug
+class EntranceAdmin(admin.ModelAdmin):
+    list_display = ['numbers']
+    list_filter = ['numbers']
+    search_fields = ['numbers']
