@@ -25,8 +25,8 @@ class BuildingTypeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(models.Сountrie)
-class СountrieAdmin(admin.ModelAdmin):
+@admin.register(models.Countrie)
+class CountrieAdmin(admin.ModelAdmin):
     list_display = ['name']
     list_filter = ['name']
     search_fields = ['name', 'abbreviations']
@@ -70,8 +70,62 @@ class EntranceTypeAdmin(admin.ModelAdmin):
     list_filter = ['name']
     search_fields = ['name']
 
-@admin.register(models.Entrance) #TODO доделать, нет slug
+@admin.register(models.Entrance)
 class EntranceAdmin(admin.ModelAdmin):
     list_display = ['numbers']
     list_filter = ['numbers']
     search_fields = ['numbers']
+
+@admin.register(models.EntranceSpecial)
+class EntranceSpecialAdmin(admin.ModelAdmin):
+       list_display = ['name']
+       list_filter = ['name']
+       search_fields = ['name', 'description']
+
+@admin.register(models.Elevator)
+class ElevatorAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name', 'description']
+
+@admin.register(models.Ladder)
+class Ladder(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name', 'description']
+
+@admin.register(models.FloorSpecial)
+class FloorSpecialAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name', 'description']
+
+@admin.register(models.SpaceType)
+class SpaceTypeAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name', 'discription']
+
+@admin.register(models.Building)
+class BuildingAdmin(admin.ModelAdmin):
+    list_display = ['index', 'country', 'region', 'locality', 'street_type', 'street', 'building_number']
+    list_filter = ['index', 'country', 'region', 'locality', 'street_type', 'street', 'building_number']
+    search_fields =['index', 'country', 'region', 'locality', 'street_type', 'street', 'building_number']
+
+@admin.register(models.Section)
+class Section(admin.ModelAdmin):
+    list_display = ['number', 'section_type', 'entrance_special', 'description', 'building', 'max_number_of_floors']
+    list_filter = ['number', 'section_type', 'entrance_special', 'description', 'building', 'max_number_of_floors']
+    search_fields = ['number', 'section_type', 'entrance_special', 'description', 'building', 'max_number_of_floors']
+
+@admin.register(models.Floor)
+class FloorAdmin(admin.ModelAdmin):
+    list_display = ['number', 'ladder', 'elevator', 'section']
+    list_filter = ['number', 'ladder', 'elevator', 'section']
+    search_fields = ['number', 'ladder', 'elevator', 'section']
+
+@admin.register(models.Space)
+class SpaceAdmin(admin.ModelAdmin):
+    list_filter = ['space_type', 'number', 'square', 'description']
+    list_display = ['space_type', 'number', 'square', 'description']
+    search_fields = ['space_type', 'number', 'square', 'description']

@@ -12,7 +12,7 @@ class BuildingType(models.Model):
         return self.name
 
 
-class Сountrie(models.Model):
+class Countrie(models.Model):
     """Справочник стран"""
     name = models.CharField(max_length=100, help_text="Название страны")
     slug = models.SlugField(max_length=100, unique=True, default=None)
@@ -143,7 +143,7 @@ class Building(models.Model):
 
     #Adress
     index = models.CharField(max_length=10, help_text="Индекс")
-    country = models.OneToOneField(Сountrie, on_delete=models.SET_NULL,
+    country = models.OneToOneField(Countrie, on_delete=models.SET_NULL,
                                    help_text="Страна", null=True)
     region = models.OneToOneField(Region, on_delete=models.SET_NULL,
                                   help_text="Субъект", null=True)
